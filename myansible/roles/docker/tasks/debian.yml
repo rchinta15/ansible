@@ -1,0 +1,50 @@
+- name: adding apt repo
+  apt_repository:
+   repo: deb https://apt.dockerproject.org/repo ubuntu-trusty main
+   update_cache: yes
+   state: present
+  tags: [docker]
+- name: install docker engine
+  apt:
+   name: docker-engine
+   state: latest
+   force: yes
+  tags: [docker]
+- name: install python pip like npm
+  apt:
+   name: python-pip
+   state: present
+   force: yes
+  tags: [docker]
+
+- name: install docker py
+  pip:
+   name: docker-py
+   version: 1.6.0
+   state: present
+  tags: [docker]
+
+- name: check file
+  template:
+    src: "{{ docker_cfg }}"
+    dest: "{{ docker_cfg_dest }}"
+  register: copy_result
+  tags: [docker]
+
+- name: restart docker service
+  service:
+    name: docker
+    state: restarted
+    when: copy_result
+  tags: [docker]
+
+
+- name: run a docker container ui
+  docker:
+    image: iifd/ui-for-docker
+    name: dockeruiblahblah
+    ports: 9000:9000
+    privileged: yes
+    volumes:
+       - /var/run/docker.sock:/var/run/docker.sock
+  tags: [docker]

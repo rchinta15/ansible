@@ -1,0 +1,5 @@
+---
+- hosts: staging
+  tasks:
+    - name: Installing nginx webserver
+      apt: pkg=nginx state=installed update_cache=true
